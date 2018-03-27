@@ -24,6 +24,8 @@ class Action(Enum):
 class Traveller:
     def __init__(self, map):
         self.map = map
+        self.start = None
+        self.goal = None
 
     def map_matrix_shape(self):
         '''
@@ -50,14 +52,19 @@ class Traveller:
         # downward movement out of map
         if down_index > max_row_index or minimap[down_index][current_column] == 1:
             valid.remove(Action.DOWN)
+        # leftside movement out of map
         if left_index < 0 or minimap[current_row][left_index] == 1:
             valid.remove(Action.LEFT)
+        # rightside movement out of map
         if right_index > max_column_index or minimap[current_row][right_index] == 1:
             valid.remove(Action.RIGHT)
 
         return valid
 
     def travel(self, start, goal):
+        self.start = start
+        self.goal = goal
+
         # {currnt_position: (parent, action)}
         paths = {}
         visited = set()
@@ -78,54 +85,56 @@ class Traveller:
                 action = act.value
                 neighbour = current[0] + action[0], current[1] + action[1]
                 
-                print('current = ', current, ' action = ', action, ' after action = ', neighbour)
+                #print('current = ', current, ' action = ', action, ' after action = ', neighbour)
 
                 if neighbour not in visited:
                     visited.add(neighbour)
                     queue.put(neighbour)
                     paths[neighbour] = (current, act)
 
+        return found, paths
 
+    def trace_back(self, paths):
         path = []
-        if found:
-            # trace back from goal
-            next = goal
-            while next != start:
-                next, action = paths[next]
-                path.append(action)
+        
+        # trace back from goal
+        next = self.goal
+        while next != self.start:
+            next, action = paths[next]
+            path.append(action)
 
         path = path[::-1]
 
-        #print(path)
-        return visualize_path(self.map, path, start)
+        return path
 
-# Define a function to visualize the path
-def visualize_path(grid, path, start):
-    """
-    Given a grid, path and start position
-    return visual of the path to the goal.
-    
-    'S' -> start 
-    'G' -> goal
-    'O' -> obstacle
-    ' ' -> empty
-    """
-    # Define a grid of string characters for visualization
-    sgrid = np.zeros(np.shape(grid), dtype=np.str)
-    sgrid[:] = ' '
-    sgrid[grid[:] == 1] = 'O'
-    
-    pos = start
-    # Fill in the string grid
-    for action in path:
-        print('pos = ', pos, ' action = ', action)
-        da = action.value
-        sgrid[pos[0], pos[1]] = str(action)
-        pos = (pos[0] + da[0], pos[1] + da[1])
-    
-    sgrid[pos[0], pos[1]] = 'G'
-    sgrid[start[0], start[1]] = 'S'  
-    return sgrid
+    # Define a function to visualize the path
+    def visualize(self, path):
+        """
+        Given a grid, path and start position
+        return visual of the path to the goal.
+
+        'S' -> start 
+        'G' -> goal
+        'O' -> obstacle
+        ' ' -> empty
+        """
+        # Define a grid of string characters for visualization
+        sgrid = np.zeros(np.shape(self.map), dtype=np.str)
+        sgrid[:] = ' '
+        sgrid[self.map[:] == 1] = 'O'
+
+        pos = self.start
+        # Fill in the string grid
+        for action in path:
+            #print('pos = ', pos, ' action = ', action)
+            da = action.value
+            sgrid[pos[0], pos[1]] = str(action)
+            pos = (pos[0] + da[0], pos[1] + da[1])
+
+        sgrid[pos[0], pos[1]] = 'G'
+        sgrid[self.start[0], self.start[1]] = 'S'  
+        
+        print(sgrid)
 
 minimap = np.array([
     [0, 0, 0, 0, 0, 0],
@@ -136,5 +145,8 @@ minimap = np.array([
 ])
 
 traveller = Traveller(minimap)
-path = traveller.travel((0,0), (4, 4))
-print(path)
+found, paths = traveller.travel((0,0), (4, 4))
+
+path = traveller.trace_back(paths) if found else exit('No path found')
+
+traveller.visualize(path)
