@@ -22,13 +22,13 @@ class Action(Enum):
             returns string representation of this action
         '''
         if self == self.LEFT:
-            return '<'
+            return '◀'
         elif self == self.RIGHT:
-            return '>'
+            return '▶'
         elif self == self.UP:
-            return '^'
+            return '▲'
         elif self == self.DOWN:
-            return 'v'
+            return '▼'
 
     def move_value(self):
         '''
@@ -165,15 +165,15 @@ class Traveller:
         print(sgrid)
 
 minimap = np.array([
-    [0, 0, 0, 0, 0, 0],
-    [0, 1, 0, 0, 0, 0],
-    [0, 1, 0, 1, 0, 0],
-    [0, 0, 0, 1, 1, 0],
-    [0, 0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+    [0, 1, 0, 0, 0, 1, 0, 1, 0, 1],
+    [0, 1, 0, 1, 0, 0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 1, 1, 0, 1, 0, 0],
+    [0, 0, 0, 0, 0, 1, 0, 1, 0, 0],
 ])
 
 traveller = Traveller(minimap)
-found, paths = traveller.travel((0,0), (4, 4))
+found, paths = traveller.travel((0,0), (4, 9))
 
 path = traveller.trace_back(paths) if found else exit('No path found')
 
