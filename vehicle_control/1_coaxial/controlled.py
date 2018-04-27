@@ -13,12 +13,6 @@ class CoaxialCopter:
         self.omega_2 = 0.0
         self.g = 9.81
 
-        # system state
-        self.z = 0
-        self.z_dot = 0
-        self.psi = 0
-        self.psi_dot = 0
-
         # z, psi, z_dot, psi_dot
         self.X = np.array([0.0, 0.0, 0.0, 0.0])
 
@@ -92,6 +86,7 @@ class CoaxialCopter:
             self.psi_dot_dot
         ])
 
+
         delta_X = X_dot * dt
         self.X = self.X + delta_X
 
@@ -105,7 +100,7 @@ dt = t[1] - t[0]
 drone = CoaxialCopter()
 z_history = []
 for z_dot_dot_targ in target_z_dot_dot:
-    z_history.append(drone.z)
+    z_history.append(drone.X[0])
     drone.set_rotors_angular_velocities(z_dot_dot_targ, 0.0)
     drone.advance_state(dt)
 
