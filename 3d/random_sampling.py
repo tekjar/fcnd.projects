@@ -60,7 +60,7 @@ samples = get_samples(data)
 
 t0 = time.time()
 samples = remove_collides(polygons, samples)
-print(samples)
+#print(samples)
 print("Time taken {0} seconds ...".format(time.time() - t0))
 print(len(samples))
 
