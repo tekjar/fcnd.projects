@@ -118,7 +118,8 @@ class Astar:
                 if neighbour not in visited:
                     visited.add(neighbour)
                     queue.put((total_cost, neighbour))
-                    paths[neighbour] = (current_node, current_node)
+                    paths[neighbour] = (total_cost, current_node)
+
 
         return found, paths
 
@@ -128,8 +129,8 @@ class Astar:
         # trace back from goal
         next = self.goal
         while next != self.start:
-            next, action = paths[next]
-            path.append(action)
+            cost, next = paths[next]
+            path.append(next)
 
         path = path[::-1]
 
